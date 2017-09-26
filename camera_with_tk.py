@@ -42,11 +42,11 @@ def reset_bar():
 
 
 def photoloop():
-#	reset_bar()
+	reset_bar()
 	for count in range(1, total_pics+1):
 		make_filename(count)
 		take_photo()
-#		update_bar()
+		update_bar()
 		sleep(capture_delay)
 
 make_filename(1)		
