@@ -17,12 +17,14 @@ def make_filename(itteration):
 	filename = fileNamePrefix+`itteration`+fileNameSufix
 
 def take_photo():
-	global previewImage
-	camera.capture(filename)
-	previewImage = Image.open(filename)
-	tkimage1 = ImageTk.PhotoImage(previewImage)
+	new_photo()
+   	tkimage1 = ImageTk.PhotoImage(previewImage)
    	panel1.configure(image=tkimage1)
    	panel1.image = tkimage1
+
+def new_photo():
+	camera.capture(imagefile)
+	previewImage = Image.open(imagefile)
 
 
 def update_bar():
@@ -55,15 +57,14 @@ make_filename(1)
 root = tk.Tk()
 root.title('Photobooth')
 
-w = 600
-h = 400
+w = 640
+h = 320
 root.geometry("%dx%d+%d+%d" % (w, h, 0, 0))
 
 # root has no image argument, so use a label as a panel
-previewImage = Image.open(filename)
-camera.capture(filename)
-previewImage = Image.open(filename)
+new_photo()
 tkimage1 = ImageTk.PhotoImage(previewImage)
+
 panel1 = tk.Label(root, image=tkimage1)
 panel1.pack(side='top', fill='both', expand='yes')
 
