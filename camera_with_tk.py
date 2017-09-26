@@ -70,7 +70,8 @@ previewImage = new_photo()
 tkimage1 = ImageTk.PhotoImage(previewImage)
 
 panel1 = tk.Label(root, image=tkimage1)
-panel1.pack(side='top', fill='both', expand='yes')
+#panel1.pack(side='top', fill='both', expand='yes')
+panel1.place(y=50,x=0, width=w, height=(h-50))
 
 # save the panel's image from 'garbage collection'
 panel1.image = tkimage1
