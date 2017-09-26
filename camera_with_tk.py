@@ -47,10 +47,8 @@ def photoloop():
 root = tk.Tk()
 root.title('Image')
 
-image1 = take_photo()
-
-w = tkimage1.width()
-h = tkimage1.height()
+w = 600
+h = 400
 root.geometry("%dx%d+%d+%d" % (w, h, 0, 0))
 
 # root has no image argument, so use a label as a panel
