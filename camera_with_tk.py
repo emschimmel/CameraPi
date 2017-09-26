@@ -52,7 +52,7 @@ make_filename(1)
 #============================
 
 # Setup a window
-root = tk.Tk()
+root = tk.Toplevel()
 root.title('Image')
 
 w = 600
