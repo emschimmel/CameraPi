@@ -45,7 +45,7 @@ def reset_bar():
 
 
 def photoloop():
-#	reset_bar()
+	reset_bar()
 	for count in range(1, total_pics+1):
 		make_filename(count)
 		take_photo()
@@ -66,14 +66,14 @@ h = 320
 root.geometry("%dx%d+%d+%d" % (w, h, 0, 0))
 
 # root has no image argument, so use a label as a panel
-#previewImage = new_photo()
-#tkimage1 = ImageTk.PhotoImage(previewImage)
+previewImage = new_photo()
+tkimage1 = ImageTk.PhotoImage(previewImage)
 
-#panel1 = tk.Label(root, image=tkimage1)
-#panel1.pack(side='top', fill='both', expand='yes')
+panel1 = tk.Label(root, image=tkimage1)
+panel1.pack(side='top', fill='both', expand='yes')
 
 # save the panel's image from 'garbage collection'
-#panel1.image = tkimage1
+panel1.image = tkimage1
 
 # Add some buttons
 buttonrow = tk.Frame(root)
@@ -87,4 +87,4 @@ button.pack(side='left')
 
 		
 		
-#photoloop()
+photoloop()
