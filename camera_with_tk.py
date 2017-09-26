@@ -20,6 +20,9 @@ def take_photo():
 	global previewImage
 	camera.capture(filename)
 	previewImage = Image.open(filename)
+	tkimage1 = ImageTk.PhotoImage(previewImage)
+   	panel1.configure(image=tkimage1)
+   	panel1.image = tkimage1
 
 
 def update_bar():
@@ -36,11 +39,11 @@ def reset_bar():
 
 
 def photoloop():
-	reset_bar()
+#	reset_bar()
 	for count in range(1, total_pics+1):
 		make_filename(count)
 		take_photo()
-		update_bar()
+#		update_bar()
 		sleep(capture_delay)
 
 make_filename(1)		
