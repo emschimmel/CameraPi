@@ -40,6 +40,8 @@ def reset_bar():
 	
 	button = tk.Button(buttonrow, text='Red Button',command = lambda: photoloop(), width=100, height=50)
 	button.pack(side='left')
+	button = tk.Button(buttonrow, text='CLOSE',command = lambda: root.destroy())
+	button.pack(side='left')
 
 
 def photoloop():
@@ -71,13 +73,15 @@ panel1 = tk.Label(root, image=tkimage1)
 panel1.pack(side='top', fill='both', expand='yes')
 
 # save the panel's image from 'garbage collection'
-panel1.image = filename
+panel1.image = tkimage1
 
 # Add some buttons
 buttonrow = tk.Frame(root)
 buttonrow.place(y=0,x=0)	
 
 button = tk.Button(buttonrow, text='Red Button',command = lambda: photoloop())
+button.pack(side='left')
+button = tk.Button(buttonrow, text='CLOSE',command = lambda: root.destroy())
 button.pack(side='left')
 
 
