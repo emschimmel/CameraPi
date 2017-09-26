@@ -17,14 +17,15 @@ def make_filename(itteration):
 	filename = fileNamePrefix+`itteration`+fileNameSufix
 
 def take_photo():
-	new_photo()
+	global previewImage
+	previewImage = new_photo()
    	tkimage1 = ImageTk.PhotoImage(previewImage)
    	panel1.configure(image=tkimage1)
    	panel1.image = tkimage1
 
 def new_photo():
 	camera.capture(filename)
-	previewImage = Image.open(filename)
+	return Image.open(filename)
 
 
 def update_bar():
@@ -62,7 +63,7 @@ h = 320
 root.geometry("%dx%d+%d+%d" % (w, h, 0, 0))
 
 # root has no image argument, so use a label as a panel
-new_photo()
+previewImage = new_photo()
 tkimage1 = ImageTk.PhotoImage(previewImage)
 
 panel1 = tk.Label(root, image=tkimage1)
