@@ -4,6 +4,7 @@ from picamera import PiCamera
 from time import sleep
 from PIL import Image,ImageTk
 
+file_path = '/home/pi/photobooth/pics/' # path to save images
 camera = PiCamera()
 fileNamePrefix = "image"
 fileNameSufix = ".jpg"
@@ -11,6 +12,8 @@ capture_delay = 1 # delay between pics
 total_pics = 4 # number of pics to be taken
 real_path = os.path.dirname(os.path.realpath(__file__))
 filename = ""
+gif_delay = 100 # How much time between frames in the animated gif
+restart_delay = 10 # how long to display finished message before beginning a new session
 
 def make_filename(itteration):
 	global filename 
@@ -43,6 +46,9 @@ def reset_bar():
 	button = tk.Button(buttonrow, text='CLOSE',command = lambda: root.destroy())
 	button.pack(side='left')
 
+def make_gif():
+	graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + config.file_path + now + "*.jpg " + config.file_path + now + ".gif" 
+	os.system(graphicsmagick) #make the .gif
 
 def photoloop():
 	reset_bar()
@@ -51,6 +57,7 @@ def photoloop():
 		take_photo()
 		update_bar()
 		sleep(capture_delay)
+	make_gif()
 
 make_filename(1)		
 #============================
