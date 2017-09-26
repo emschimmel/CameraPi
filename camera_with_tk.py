@@ -52,8 +52,8 @@ make_filename(1)
 #============================
 
 # Setup a window
-root = tk.Toplevel()
-root.title('Image')
+root = tk.Tk()
+root.title('Photobooth')
 
 w = 600
 h = 400
@@ -61,7 +61,10 @@ root.geometry("%dx%d+%d+%d" % (w, h, 0, 0))
 
 # root has no image argument, so use a label as a panel
 previewImage = Image.open(filename)
-panel1 = tk.Label(root, image=previewImage)
+camera.capture(filename)
+previewImage = Image.open(filename)
+tkimage1 = ImageTk.PhotoImage(previewImage)
+panel1 = tk.Label(root, image=tkimage1)
 panel1.pack(side='top', fill='both', expand='yes')
 
 # save the panel's image from 'garbage collection'
