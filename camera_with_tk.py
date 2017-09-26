@@ -2,6 +2,7 @@ import os
 import Tkinter as tk
 from picamera import PiCamera
 from time import sleep
+from PIL import Image
 
 camera = PiCamera()
 fileNamePrefix = "image"
@@ -16,11 +17,14 @@ def make_filename(itteration):
 	filename = fileNamePrefix+`itteration`+fileNameSufix
 
 def take_photo():
+	global previewImage
 	camera.capture(filename)
+	previewImage = Image.open(filename)
 
 
 def update_bar():
-	button = tk.Label(buttonrow, image=filename, width=100, height=50)
+	miniImage = Image.open(filename)
+	button = tk.Label(buttonrow, image=miniImage, width=100, height=50)
 	button.pack(side='left')
 
 def reset_bar():
@@ -52,7 +56,8 @@ h = 400
 root.geometry("%dx%d+%d+%d" % (w, h, 0, 0))
 
 # root has no image argument, so use a label as a panel
-panel1 = tk.Label(root, image=filename)
+previewImage = Image.open(filename)
+panel1 = tk.Label(root, image=previewImage)
 panel1.pack(side='top', fill='both', expand='yes')
 
 # save the panel's image from 'garbage collection'
