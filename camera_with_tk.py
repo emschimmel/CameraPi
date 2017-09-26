@@ -1,4 +1,5 @@
 import os
+import Tkinter as tk
 from picamera import PiCamera
 from time import sleep
 
