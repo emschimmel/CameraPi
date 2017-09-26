@@ -87,4 +87,4 @@ button.pack(side='left')
 
 		
 		
-photoloop()
+#photoloop()
