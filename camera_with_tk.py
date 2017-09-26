@@ -23,8 +23,8 @@ def take_photo():
    	panel1.image = tkimage1
 
 def new_photo():
-	camera.capture(imagefile)
-	previewImage = Image.open(imagefile)
+	camera.capture(filename)
+	previewImage = Image.open(filename)
 
 
 def update_bar():
