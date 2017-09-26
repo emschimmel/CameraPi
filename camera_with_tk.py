@@ -47,7 +47,7 @@ def photoloop():
 root = tk.Tk()
 root.title('Image')
 
-image1 = take_photo(filename)
+image1 = take_photo()
 
 w = tkimage1.width()
 h = tkimage1.height()
