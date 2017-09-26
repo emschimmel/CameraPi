@@ -42,7 +42,8 @@ def photoloop():
 		take_photo()
 		update_bar()
 		sleep(capture_delay)
-		
+
+make_filename(0)		
 #============================
 # Optional display here
 #============================
