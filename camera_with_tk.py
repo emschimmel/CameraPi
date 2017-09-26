@@ -29,7 +29,8 @@ def new_photo():
 
 
 def update_bar():
-	miniImage = Image.open(filename)
+	global previewImage
+   	miniImage = ImageTk.PhotoImage(previewImage)
 	button = tk.Label(buttonrow, image=miniImage, width=100, height=50)
 	button.pack(side='left')
 
