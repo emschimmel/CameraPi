@@ -86,5 +86,5 @@ button.pack(side='left')
 
 
 		
-		
+root.mainloop()		
 photoloop()
