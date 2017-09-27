@@ -16,6 +16,7 @@ class CameraDisplay:
     global intervalBeforeScreensaver
     global intervalInScreensaver
     global capture_delay
+    global gif_delay
     global total_pics
     
     global displayWith
