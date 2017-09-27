@@ -1,6 +1,7 @@
 import os
 import Tkinter as tk
 from picamera import PiCamera
+import time
 from time import sleep
 from PIL import Image,ImageTk
 
