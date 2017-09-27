@@ -50,7 +50,7 @@ class CameraDisplay:
 		global previewPanel
 		global tkimage1
 		for x in range(1, total_pics+1): #batch process all the images
-			graphicsmagick = "gm convert -size 500x500 " + file_path + now + "-0" + str(x) + ".jpg -thumbnail 500x500 " + file_path + now + "-0" + str(x) + "-sm.jpg"
+			graphicsmagick = "gm convert -size 500x500 " + file_path + "image" + str(x) + ".jpg -thumbnail 500x500 " + file_path + now + "image" + str(x) + "-sm.jpg"
 			os.system(graphicsmagick) #do the graphicsmagick action
 
 		graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + file_path + now + "*-sm.jpg " + file_path + now + ".gif" 
