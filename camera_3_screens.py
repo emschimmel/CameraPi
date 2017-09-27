@@ -104,6 +104,7 @@ class CameraDisplay:
     #--------------------------------------------------------------
     def drawCameraReadyPage(self):
     	global activePage
+    	global mainwindowSubFrame
     	activePage = Page.READY
     	for widget in mainwindow.winfo_children():
             widget.destroy()
@@ -119,6 +120,8 @@ class CameraDisplay:
     	global activePage
     	global tkimage1
     	global previewPanel
+    	global mainwindowPreviewBar
+    	global mainwindowSubFrame
     	activePage = Page.CAMERA
     	for widget in mainwindow.winfo_children():
             widget.destroy()
@@ -139,6 +142,7 @@ class CameraDisplay:
     def drawScreensaverPage(self):
     	global activePage
     	global tkimage1
+    	global mainwindowSubFrame
     	activePage = Page.SCREENSAVER
     	for widget in mainwindow.winfo_children():
         	widget.destroy()
