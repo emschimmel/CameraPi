@@ -49,6 +49,7 @@ class CameraDisplay:
     #   private functions
     #--------------------------------------------------------------
     def make_gif(self):
+		print('make_gif')
 		global previewPanel
 		global tkimage1
 		now = time.strftime("%Y-%m-%d-%H-%M-%S") #get the current date and time for the start of the filename
@@ -66,6 +67,7 @@ class CameraDisplay:
 		previewPanel.image = tkimage1
 		
     def photo_loop(self):
+    	print('photo_loop')
     	global previewPanel
     	for count in range(1, total_pics+1):
    			tkimage1 = self.take_picture(count)
@@ -78,6 +80,7 @@ class CameraDisplay:
     	self.make_gif()
 
     def take_picture(self, count):
+		print('take_picture')
 		filename = file_path + 'image' + str(count) + '.jpg'
 		camera.capture(filename)
 		currenctImage = Image.open(filename)
@@ -122,6 +125,7 @@ class CameraDisplay:
     #   page 1 -- Camera ready
     #--------------------------------------------------------------
     def drawCameraReadyPage(self):
+    	print('page 1')
     	global activePage
     	global mainwindowSubFrame
     	activePage = Page.READY
@@ -136,6 +140,7 @@ class CameraDisplay:
     #   page 2 -- Taking a picture
     #--------------------------------------------------------------
     def drawTakingPicturePage(self):
+        print('page 2')
     	global activePage
     	global tkimage1
     	global previewPanel
@@ -159,6 +164,7 @@ class CameraDisplay:
     #   page 3 -- Screensaver
     #--------------------------------------------------------------
     def drawScreensaverPage(self):
+        print('page 3')
     	global activePage
     	global tkimage1
     	global mainwindowSubFrame
