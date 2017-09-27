@@ -86,7 +86,7 @@ class CameraDisplay:
             widget.destroy()
         mainwindowSubFrame = tk.Frame(mainwindow)
         mainwindowSubFrame.place(y=200,x=0, width=displayWith, height=(displayHeight-250))
-        tkimage1 = take_picture()
+        tkimage1 = self.take_picture()
         panel1 = tk.Label(mainwindowSubFrame, image=tkimage1)
         panel1.place(y=50,x=0, width=w, height=(h-50))
         self.photo_loop()
@@ -136,7 +136,7 @@ class CameraDisplay:
 
 	def photo_loop(self):
 		for count in range(1, total_pics+1):
-			tkimage1 = take_picture()
+			tkimage1 = self.take_picture()
    			panel1.configure(image=tkimage1)
    			panel1.image = tkimage1
    			
