@@ -24,6 +24,7 @@ class CameraDisplay:
     global mainwindow
     global mainwindowSubFrame
     global mainwindowPreviewBar
+    global staticbuttonrow
     global activePage
     global tkimage1
     
