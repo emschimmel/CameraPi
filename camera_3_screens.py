@@ -58,7 +58,7 @@ class CameraDisplay:
 		make_gif()
 
     def take_picture(self, count):
-		filename = file_path + '-0' + str(count) + '.jpg'
+		filename = file_path + 'image' + str(count) + '.jpg'
 		camera.capture(filename)
 		currenctImage = Image.open(filename)
 		return ImageTk.PhotoImage(previewImage)
