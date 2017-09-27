@@ -171,7 +171,8 @@ class CameraDisplay:
         screenSaverItemlabel = tk.Label(mainwindowSubFrame, image=tkimage1)
         screenSaverItemlabel.pack()
         while activePage is Page.SCREENSAVER:
-        	previewImage = self.nextPreview()
+        	filename = self.nextPreview()
+        	previewImage = Image.open(file_path + filename)
         	tkimage1 = ImageTk.PhotoImage(previewImage, format="gif -index 2")
         	screenSaverItemlabel.configure(image=tkimage1)
         	screenSaverItemlabel.image = tkimage1	
