@@ -93,6 +93,5 @@ button = tk.Button(buttonrow, text='CLOSE',command = lambda: root.destroy())
 button.pack(side='left')
 
 
-		
+photoloop()		
 root.mainloop()		
-photoloop()
