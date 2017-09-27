@@ -80,6 +80,7 @@ class CameraDisplay:
     #--------------------------------------------------------------
     def drawTakingPicturePage(self):
     	global activePage
+    	global tkimage1
     	activePage = Page.CAMERA
     	for widget in mainwindow.winfo_children():
             widget.destroy()
