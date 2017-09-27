@@ -52,6 +52,11 @@ def reset_bar():
 def make_gif():
 	graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + file_path + now + "*.jpg " + file_path + now + ".gif" 
 	os.system(graphicsmagick) #make the .gif
+	generatedGif = Image.open(file_path + now + ".gif" )
+	tkimage1 = ImageTk.PhotoImage(generatedGif)
+   	panel1.configure(image=tkimage1)
+   	panel1.image = tkimage1
+	
 
 def photoloop():
 	reset_bar()
