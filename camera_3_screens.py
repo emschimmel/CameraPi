@@ -85,7 +85,7 @@ class CameraDisplay:
         mainwindowSubFrame = tk.Frame(mainwindow)
         mainwindowSubFrame.place(y=200,x=0, width=displayWith, height=(displayHeight-250))
         panel1 = tk.Label(mainwindowSubFrame, image=tkimage1)
-		panel1.place(y=50,x=0, width=w, height=(h-50))
+        panel1.place(y=50,x=0, width=w, height=(h-50))
         self.photo_loop()
         sleep(intervalBeforeScreensaver)
         self.drawScreensaverPage()
@@ -98,7 +98,7 @@ class CameraDisplay:
     	global tkimage1
     	activePage = Page.SCREENSAVER
     	for widget in mainwindow.winfo_children():
-            widget.destroy()
+        	widget.destroy()
         mainwindowSubFrame = tk.Frame(mainwindow)
         mainwindowSubFrame.place(y=100,x=0, width=displayWith, height=50)
         
@@ -106,19 +106,19 @@ class CameraDisplay:
         
         screenSaverItemlabel = tk.Label(mainwindowSubFrame, image=tkimage1)
         screenSaverItemlabel.pack()
-        while activePage is Page.SCREENSAVER
+        while activePage is Page.SCREENSAVER:
         	previewImage = self.nextPreview()
         	tkimage1 = ImageTk.PhotoImage(previewImage, format="gif -index 2")
-   			screenSaverItemlabel.configure(image=tkimage1)
-   			screenSaverItemlabel.image = tkimage1	
+        	screenSaverItemlabel.configure(image=tkimage1)
+        	screenSaverItemlabel.image = tkimage1	
         	sleep(intervalInScreensaver)
         	
     def nextPreview(self):
     	root, dirs, files=next(os.walk(file_path))
-		imageCollection=list(filter(lambda filename:filename.endswith('.gif'), files))
-		if not imageCollection:
-			imageCollection=list(filter(lambda filename:filename.endswith('.jpg'), files))	
-		return random.choice(imageCollection)
+    	imageCollection=list(filter(lambda filename:filename.endswith('.gif'), files))
+    	if not imageCollection:
+			imageCollection=list(filter(lambda filename:filename.endswith('.jpg'), files))
+    	return random.choice(imageCollection)
     
     #--------------------------------------------------------------
     #   lambda function
@@ -126,11 +126,11 @@ class CameraDisplay:
     def click_red_button(self):
     	global activePage
     	print('red button clicked')
-    	if activePage is Page.READY
+    	if activePage is Page.READY:
     		self.drawTakingPicturePage() # Camera ready, start making a picture
-    	elif activePage is Page.CAMERA
+    	elif activePage is Page.CAMERA:
     		self.drawTakingPicturePage() # Make a new picture
-    	elif activePage is Page.SCREENSAVER
+    	elif activePage is Page.SCREENSAVER:
     		self.drawCameraReadyPage() # Cancel screensaver, show ready page
 
 	def photo_loop(self):
