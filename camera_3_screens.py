@@ -37,7 +37,7 @@ class CameraDisplay:
     displayWith = 640
     displayHeight = 320
     file_path = '/home/pi/photobooth/pics/' # path to save images
-	windowTitle = 'Photobooth'
+    windowTitle = 'Photobooth'
 
     #--------------------------------------------------------------
     #   window
