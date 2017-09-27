@@ -53,7 +53,7 @@ class CameraDisplay:
    			previewPanel.configure(image=tkimage1)
    			previewPanel.image = tkimage1
    			
-			miniImage = ImageTk.PhotoImage(previewImage)
+			miniImage = ImageTk.PhotoImage(tkimage1)
 			label = tk.Label(mainwindowPreviewBar, image=miniImage, width=100, height=50)
 			label.pack(side='left')
 			sleep(capture_delay)
