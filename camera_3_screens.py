@@ -36,6 +36,7 @@ class CameraDisplay:
     intervalBeforeScreensaver = 10
     intervalInScreensaver = 5
     capture_delay = 1 # delay between pics
+    gif_delay = 100 # How much time between frames in the animated gif
     total_pics = 5
     displayWith = 640
     displayHeight = 320
