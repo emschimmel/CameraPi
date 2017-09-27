@@ -58,7 +58,7 @@ class CameraDisplay:
 			sleep(capture_delay)
     	self.make_gif()
 
-	def make_gif():
+	def make_gif(self):
 		global previewPanel
 		global tkimage1
 		for x in range(1, total_pics+1): #batch process all the images
