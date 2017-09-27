@@ -39,7 +39,6 @@ class CameraDisplay:
     displayHeight = 320
     file_path = '/home/pi/photobooth/pics/' # path to save images
     windowTitle = 'Photobooth'
-    tkimage1 = ImageTk.PhotoImage(Image.open('image1.jpg'))
 
     #--------------------------------------------------------------
     #   window
@@ -103,9 +102,8 @@ class CameraDisplay:
         	widget.destroy()
         mainwindowSubFrame = tk.Frame(mainwindow)
         mainwindowSubFrame.place(y=100,x=0, width=displayWith, height=50)
-        
-        
-        
+
+        tkimage1 = take_picture()
         screenSaverItemlabel = tk.Label(mainwindowSubFrame, image=tkimage1)
         screenSaverItemlabel.pack()
         while activePage is Page.SCREENSAVER:
@@ -137,10 +135,7 @@ class CameraDisplay:
 
 	def photo_loop(self):
 		for count in range(1, total_pics+1):
-			filename = file_path + now + '-0' + str(count) + '.jpg'
-			camera.capture(filename)
-			currenctImage = Image.open(filename)
-			tkimage1 = ImageTk.PhotoImage(previewImage)
+   			tkimage1 = take_picture()
    			panel1.configure(image=tkimage1)
    			panel1.image = tkimage1
    			
@@ -149,6 +144,12 @@ class CameraDisplay:
 			label.pack(side='left')
 			sleep(capture_delay)
 		make_gif()
+		
+	def take_picture(self):
+		filename = file_path + now + '-0' + str(count) + '.jpg'
+		camera.capture(filename)
+		currenctImage = Image.open(filename)
+		return ImageTk.PhotoImage(previewImage)
 	
     
     #--------------------------------------------------------------
