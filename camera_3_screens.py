@@ -39,6 +39,40 @@ class CameraDisplay:
     displayHeight = 320
     file_path = '/home/pi/photobooth/pics/' # path to save images
     windowTitle = 'Photobooth'
+    
+    #--------------------------------------------------------------
+    #   private functions
+    #--------------------------------------------------------------
+    def photo_loop(self):
+		for count in range(1, total_pics+1):
+			tkimage1 = self.take_picture()
+   			panel1.configure(image=tkimage1)
+   			panel1.image = tkimage1
+   			
+			miniImage = ImageTk.PhotoImage(previewImage)
+			label = tk.Label(mainwindowPreviewBar, image=miniImage, width=100, height=50)
+			label.pack(side='left')
+			sleep(capture_delay)
+		make_gif()
+
+    def take_picture(self):
+		filename = file_path + now + '-0' + str(count) + '.jpg'
+		camera.capture(filename)
+		currenctImage = Image.open(filename)
+		return ImageTk.PhotoImage(previewImage)
+
+    #--------------------------------------------------------------
+    #   lambda function
+    #--------------------------------------------------------------
+    def click_red_button(self):
+    	global activePage
+    	print('red button clicked')
+    	if activePage is Page.READY:
+    		self.drawTakingPicturePage() # Camera ready, start making a picture
+    	elif activePage is Page.CAMERA:
+    		self.drawTakingPicturePage() # Make a new picture
+    	elif activePage is Page.SCREENSAVER:	
+    		self.drawCameraReadyPage() # Cancel screensaver, show ready page
 
     #--------------------------------------------------------------
     #   window
@@ -120,38 +154,7 @@ class CameraDisplay:
     	if not imageCollection:
 			imageCollection=list(filter(lambda filename:filename.endswith('.jpg'), files))
     	return random.choice(imageCollection)
-    
-    #--------------------------------------------------------------
-    #   lambda function
-    #--------------------------------------------------------------
-    def click_red_button(self):
-    	global activePage
-    	print('red button clicked')
-    	if activePage is Page.READY:
-    		self.drawTakingPicturePage() # Camera ready, start making a picture
-    	elif activePage is Page.CAMERA:
-    		self.drawTakingPicturePage() # Make a new picture
-    	elif activePage is Page.SCREENSAVER:	
-    		self.drawCameraReadyPage() # Cancel screensaver, show ready page
-
-	def photo_loop(self):
-		for count in range(1, total_pics+1):
-			tkimage1 = self.take_picture()
-   			panel1.configure(image=tkimage1)
-   			panel1.image = tkimage1
-   			
-			miniImage = ImageTk.PhotoImage(previewImage)
-			label = tk.Label(mainwindowPreviewBar, image=miniImage, width=100, height=50)
-			label.pack(side='left')
-			sleep(capture_delay)
-		make_gif()
-		
-	def take_picture(self):
-		filename = file_path + now + '-0' + str(count) + '.jpg'
-		camera.capture(filename)
-		currenctImage = Image.open(filename)
-		return ImageTk.PhotoImage(previewImage)
-	
+    	
     
     #--------------------------------------------------------------
     #   run
