@@ -25,6 +25,7 @@ class CameraDisplay:
     global mainwindowSubFrame
     global mainwindowPreviewBar
     global staticbuttonrow
+    global previewPanel
     global activePage
     global tkimage1
     global camera
@@ -46,16 +47,17 @@ class CameraDisplay:
     #   private functions
     #--------------------------------------------------------------
     def photo_loop(self):
-		for count in range(1, total_pics+1):
-			tkimage1 = self.take_picture(count)
-   			panel1.configure(image=tkimage1)
-   			panel1.image = tkimage1
+    	global previewPanel
+    	for count in range(1, total_pics+1):
+   			tkimage1 = self.take_picture(count)
+   			previewPanel.configure(image=tkimage1)
+   			previewPanel.image = tkimage1
    			
 			miniImage = ImageTk.PhotoImage(previewImage)
 			label = tk.Label(mainwindowPreviewBar, image=miniImage, width=100, height=50)
 			label.pack(side='left')
 			sleep(capture_delay)
-		make_gif()
+    	make_gif()
 
     def take_picture(self, count):
 		filename = file_path + 'image' + str(count) + '.jpg'
@@ -117,14 +119,15 @@ class CameraDisplay:
     def drawTakingPicturePage(self):
     	global activePage
     	global tkimage1
+    	global previewPanel
     	activePage = Page.CAMERA
     	for widget in mainwindow.winfo_children():
             widget.destroy()
         mainwindowSubFrame = tk.Frame(mainwindow)
         mainwindowSubFrame.place(y=200,x=0, width=displayWith, height=(displayHeight-250))
         tkimage1 = self.take_picture(0)
-        panel1 = tk.Label(mainwindowSubFrame, image=tkimage1)
-        panel1.place(y=50,x=0, width=displayWith, height=(displayHeight-50))
+        previewPanel = tk.Label(mainwindowSubFrame, image=tkimage1)
+        previewPanel.place(y=50,x=0, width=displayWith, height=(displayHeight-50))
         self.photo_loop()
         sleep(intervalBeforeScreensaver)
         self.drawScreensaverPage()
