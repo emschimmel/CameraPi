@@ -46,19 +46,7 @@ class CameraDisplay:
     #--------------------------------------------------------------
     #   private functions
     #--------------------------------------------------------------
-    def photo_loop(self):
-    	global previewPanel
-    	for count in range(1, total_pics+1):
-   			tkimage1 = self.take_picture(count)
-   			previewPanel.configure(image=tkimage1)
-   			previewPanel.image = tkimage1
-   			
-			label = tk.Label(mainwindowPreviewBar, image=tkimage1, width=100, height=50)
-			label.pack(side='left')
-			sleep(capture_delay)
-    	self.make_gif()
-
-	def make_gif(self):
+    def make_gif(self):
 		global previewPanel
 		global tkimage1
 		for x in range(1, total_pics+1): #batch process all the images
@@ -73,6 +61,18 @@ class CameraDisplay:
 		tkimage1 = ImageTk.PhotoImage(generatedGif)
 		previewPanel.configure(image=tkimage1)
 		previewPanel.image = tkimage1
+		
+    def photo_loop(self):
+    	global previewPanel
+    	for count in range(1, total_pics+1):
+   			tkimage1 = self.take_picture(count)
+   			previewPanel.configure(image=tkimage1)
+   			previewPanel.image = tkimage1
+   			
+			label = tk.Label(mainwindowPreviewBar, image=tkimage1, width=100, height=50)
+			label.pack(side='left')
+			sleep(capture_delay)
+    	self.make_gif()
 
     def take_picture(self, count):
 		filename = file_path + 'image' + str(count) + '.jpg'
