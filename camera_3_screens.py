@@ -56,7 +56,23 @@ class CameraDisplay:
 			label = tk.Label(mainwindowPreviewBar, image=tkimage1, width=100, height=50)
 			label.pack(side='left')
 			sleep(capture_delay)
-    	make_gif()
+    	self.make_gif()
+
+	def make_gif():
+		global previewPanel
+		global tkimage1
+		for x in range(1, total_pics+1): #batch process all the images
+			graphicsmagick = "gm convert -size 500x500 " + file_path + now + "-0" + str(x) + ".jpg -thumbnail 500x500 " + file_path + now + "-0" + str(x) + "-sm.jpg"
+			os.system(graphicsmagick) #do the graphicsmagick action
+
+		graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + file_path + now + "*-sm.jpg " + file_path + now + ".gif" 
+		os.system(graphicsmagick) #make the .gif
+		#graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + file_path + now + "*.jpg " + file_path + now + ".gif" 
+		#os.system(graphicsmagick) #make the .gif
+		generatedGif = Image.open(file_path + now + ".gif" )
+		tkimage1 = ImageTk.PhotoImage(generatedGif)
+		previewPanel.configure(image=tkimage1)
+		previewPanel.image = tkimage1
 
     def take_picture(self, count):
 		filename = file_path + 'image' + str(count) + '.jpg'
