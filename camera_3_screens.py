@@ -61,7 +61,7 @@ class CameraDisplay:
 		filename = file_path + 'image' + str(count) + '.jpg'
 		camera.capture(filename)
 		currenctImage = Image.open(filename)
-		return ImageTk.PhotoImage(previewImage)
+		return ImageTk.PhotoImage(currenctImage)
 
     #--------------------------------------------------------------
     #   lambda function
