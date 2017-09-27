@@ -10,7 +10,7 @@ camera = PiCamera()
 fileNamePrefix = "image"
 fileNameSufix = ".jpg"
 capture_delay = 1 # delay between pics
-total_pics = 4 # number of pics to be taken
+total_pics = 5 # number of pics to be taken
 real_path = os.path.dirname(os.path.realpath(__file__))
 filename = ""
 gif_delay = 100 # How much time between frames in the animated gif
@@ -50,8 +50,14 @@ def reset_bar():
 	button.pack(side='left')
 
 def make_gif():
-	graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + file_path + now + "*.jpg " + file_path + now + ".gif" 
+	for x in range(1, total_pics+1): #batch process all the images
+		graphicsmagick = "gm convert -size 500x500 " + file_path + now + "-0" + str(x) + ".jpg -thumbnail 500x500 " + file_path + now + "-0" + str(x) + "-sm.jpg"
+		os.system(graphicsmagick) #do the graphicsmagick action
+
+	graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + file_path + now + "*-sm.jpg " + file_path + now + ".gif" 
 	os.system(graphicsmagick) #make the .gif
+	#graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + file_path + now + "*.jpg " + file_path + now + ".gif" 
+	#os.system(graphicsmagick) #make the .gif
 	generatedGif = Image.open(file_path + now + ".gif" )
 	tkimage1 = ImageTk.PhotoImage(generatedGif)
    	panel1.configure(image=tkimage1)
