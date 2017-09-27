@@ -48,7 +48,7 @@ class CameraDisplay:
     
     #main frame
     mainwindow = tk.Frame(root)
-    mainwindow.place(y=20,x=0, width=w, height=(h-20))
+    mainwindow.place(y=20,x=0, width=displayWith, height=(displayHeight-20))
     
     #--------------------------------------------------------------
     #   Controll buttonrow
@@ -130,7 +130,7 @@ class CameraDisplay:
     		self.drawTakingPicturePage() # Camera ready, start making a picture
     	elif activePage is Page.CAMERA:
     		self.drawTakingPicturePage() # Make a new picture
-    	elif activePage is Page.SCREENSAVER:
+    	elif activePage is Page.SCREENSAVER:	
     		self.drawCameraReadyPage() # Cancel screensaver, show ready page
 
 	def photo_loop(self):
