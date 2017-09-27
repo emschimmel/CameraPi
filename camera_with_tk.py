@@ -14,10 +14,12 @@ real_path = os.path.dirname(os.path.realpath(__file__))
 filename = ""
 gif_delay = 100 # How much time between frames in the animated gif
 restart_delay = 10 # how long to display finished message before beginning a new session
+now = time.strftime("%Y-%m-%d-%H-%M-%S") #get the current date and time for the start of the filename
 
 def make_filename(itteration):
 	global filename 
-	filename = fileNamePrefix+`itteration`+fileNameSufix
+	#filename = fileNamePrefix+`itteration`+fileNameSufix
+	filename = file_path + now + '-0' + str(itteration) + '.jpg'
 
 def take_photo():
 	global previewImage
@@ -47,7 +49,7 @@ def reset_bar():
 	button.pack(side='left')
 
 def make_gif():
-	graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + config.file_path + now + "*.jpg " + config.file_path + now + ".gif" 
+	graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + file_path + now + "*.jpg " + file_path + now + ".gif" 
 	os.system(graphicsmagick) #make the .gif
 
 def photoloop():
@@ -93,5 +95,6 @@ button = tk.Button(buttonrow, text='CLOSE',command = lambda: root.destroy())
 button.pack(side='left')
 
 
-photoloop()		
+		
 root.mainloop()		
+photoloop()
