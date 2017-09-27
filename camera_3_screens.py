@@ -39,6 +39,7 @@ class CameraDisplay:
     displayHeight = 320
     file_path = '/home/pi/photobooth/pics/' # path to save images
     windowTitle = 'Photobooth'
+    tkimage1 = ImageTk.PhotoImage(Image.open('image1.jpg'))
 
     #--------------------------------------------------------------
     #   window
