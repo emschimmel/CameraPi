@@ -122,6 +122,8 @@ class CameraDisplay:
     	activePage = Page.CAMERA
     	for widget in mainwindow.winfo_children():
             widget.destroy()
+        mainwindowPreviewBar = tk.Frame(mainwindow)
+        mainwindowPreviewBar.place(y=0,x=0, width=displayWith, height=(200))
         mainwindowSubFrame = tk.Frame(mainwindow)
         mainwindowSubFrame.place(y=200,x=0, width=displayWith, height=(displayHeight-250))
         tkimage1 = self.take_picture(0)
