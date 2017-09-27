@@ -124,7 +124,7 @@ class CameraDisplay:
         mainwindowSubFrame.place(y=200,x=0, width=displayWith, height=(displayHeight-250))
         tkimage1 = self.take_picture(0)
         panel1 = tk.Label(mainwindowSubFrame, image=tkimage1)
-        panel1.place(y=50,x=0, width=w, height=(h-50))
+        panel1.place(y=50,x=0, width=displayWith, height=(displayHeight-50))
         self.photo_loop()
         sleep(intervalBeforeScreensaver)
         self.drawScreensaverPage()
@@ -139,7 +139,7 @@ class CameraDisplay:
     	for widget in mainwindow.winfo_children():
         	widget.destroy()
         mainwindowSubFrame = tk.Frame(mainwindow)
-        mainwindowSubFrame.place(y=100,x=0, width=displayWith, height=50)
+        mainwindowSubFrame.place(y=100,x=0, width=displayWith, height=displayHeight)
 
         screenSaverItemlabel = tk.Label(mainwindowSubFrame, image=tkimage1)
         screenSaverItemlabel.pack()
