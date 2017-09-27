@@ -27,6 +27,7 @@ class CameraDisplay:
     global staticbuttonrow
     global activePage
     global tkimage1
+    global camera
     
 	#--------------------------------------------------------------
     #   config assigns
@@ -39,6 +40,7 @@ class CameraDisplay:
     displayHeight = 320
     file_path = '/home/pi/photobooth/pics/' # path to save images
     windowTitle = 'Photobooth'
+    camera = PiCamera()
     
     #--------------------------------------------------------------
     #   private functions
