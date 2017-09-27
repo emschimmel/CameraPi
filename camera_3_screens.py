@@ -45,7 +45,7 @@ class CameraDisplay:
     #--------------------------------------------------------------
     def photo_loop(self):
 		for count in range(1, total_pics+1):
-			tkimage1 = self.take_picture()
+			tkimage1 = self.take_picture(count)
    			panel1.configure(image=tkimage1)
    			panel1.image = tkimage1
    			
@@ -55,8 +55,8 @@ class CameraDisplay:
 			sleep(capture_delay)
 		make_gif()
 
-    def take_picture(self):
-		filename = file_path + now + '-0' + str(count) + '.jpg'
+    def take_picture(self, count):
+		filename = file_path + '-0' + str(count) + '.jpg'
 		camera.capture(filename)
 		currenctImage = Image.open(filename)
 		return ImageTk.PhotoImage(previewImage)
@@ -120,7 +120,7 @@ class CameraDisplay:
             widget.destroy()
         mainwindowSubFrame = tk.Frame(mainwindow)
         mainwindowSubFrame.place(y=200,x=0, width=displayWith, height=(displayHeight-250))
-        tkimage1 = self.take_picture()
+        tkimage1 = self.take_picture(0)
         panel1 = tk.Label(mainwindowSubFrame, image=tkimage1)
         panel1.place(y=50,x=0, width=w, height=(h-50))
         self.photo_loop()
