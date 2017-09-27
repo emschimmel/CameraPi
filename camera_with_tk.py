@@ -7,8 +7,6 @@ from PIL import Image,ImageTk
 
 file_path = '/home/pi/photobooth/pics/' # path to save images
 camera = PiCamera()
-fileNamePrefix = "image"
-fileNameSufix = ".jpg"
 capture_delay = 1 # delay between pics
 total_pics = 5 # number of pics to be taken
 real_path = os.path.dirname(os.path.realpath(__file__))
@@ -19,7 +17,6 @@ now = time.strftime("%Y-%m-%d-%H-%M-%S") #get the current date and time for the 
 
 def make_filename(itteration):
 	global filename 
-	#filename = fileNamePrefix+`itteration`+fileNameSufix
 	filename = file_path + now + '-0' + str(itteration) + '.jpg'
 
 def take_photo():
@@ -91,7 +88,7 @@ previewImage = new_photo()
 tkimage1 = ImageTk.PhotoImage(previewImage)
 
 panel1 = tk.Label(root, image=tkimage1)
-#panel1.pack(side='top', fill='both', expand='yes')
+#panel1.pack(side='top', fill='both', expand='yes')bn
 panel1.place(y=50,x=0, width=w, height=(h-50))
 
 # save the panel's image from 'garbage collection'
