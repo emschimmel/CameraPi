@@ -203,14 +203,11 @@ def start_photobooth():
 	
 	pixel_width = 0 # local variable declaration
 	pixel_height = 0 # local variable declaration
+
+	pixel_width = 500 # maximum width of animated gif on tumblr
+	pixel_height = config.monitor_h * pixel_width // config.monitor_w
+	camera.resolution = (pixel_width, pixel_height) # set camera resolution to low res
 	
-	if config.hi_res_pics:
-		camera.resolution = (high_res_w, high_res_h) # set camera resolution to high res
-	else:
-		pixel_width = 500 # maximum width of animated gif on tumblr
-		pixel_height = config.monitor_h * pixel_width // config.monitor_w
-		camera.resolution = (pixel_width, pixel_height) # set camera resolution to low res
-		
 	################################# Begin Step 2 #################################
 	
 	print "Taking pics"
@@ -259,61 +256,15 @@ def start_photobooth():
 	
 	print "Creating an animated gif" 
 	
-	if config.post_online:
-		show_image(real_path + "/uploading.png")
-	else:
-		show_image(real_path + "/processing.png")
+	show_image(real_path + "/processing.png")
 	
-	if config.make_gifs: # make the gifs
-		if config.hi_res_pics:
-			# first make a small version of each image. Tumblr's max animated gif's are 500 pixels wide.
-			for x in range(1, total_pics+1): #batch process all the images
-				graphicsmagick = "gm convert -size 500x500 " + config.file_path + now + "-0" + str(x) + ".jpg -thumbnail 500x500 " + config.file_path + now + "-0" + str(x) + "-sm.jpg"
-				os.system(graphicsmagick) #do the graphicsmagick action
+	# first make a small version of each image. Tumblr's max animated gif's are 500 pixels wide.
+	for x in range(1, total_pics+1): #batch process all the images
+		graphicsmagick = "gm convert -size 500x500 " + config.file_path + now + "-0" + str(x) + ".jpg -thumbnail 500x500 " + config.file_path + now + "-0" + str(x) + "-sm.jpg"
+		os.system(graphicsmagick) #do the graphicsmagick action
 
-			graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + config.file_path + now + "*-sm.jpg " + config.file_path + now + ".gif" 
-			os.system(graphicsmagick) #make the .gif
-		else:
-			# make an animated gif with the low resolution images
-			graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + config.file_path + now + "*.jpg " + config.file_path + now + ".gif" 
-			os.system(graphicsmagick) #make the .gif
-
-	if config.post_online: # turn off posting pics online in config.py
-		connected = is_connected() #check to see if you have an internet connection
-
-		if (connected==False):
-			print "bad internet connection"
-                    
-		while connected:
-			if config.make_gifs: 
-				try:
-					file_to_upload = config.file_path + now + ".gif"
-				#	client.create_photo(config.tumblr_blog, state="published", tags=[config.tagsForTumblr], data=file_to_upload)
-					break
-				except ValueError:
-					print "Oops. No internect connection. Upload later."
-					try: #make a text file as a note to upload the .gif later
-						file = open(config.file_path + now + "-FILENOTUPLOADED.txt",'w')   # Trying to create a new file or open one
-						file.close()
-					except:
-						print('Something went wrong. Could not write file.')
-						sys.exit(0) # quit Python
-			else: # upload jpgs instead
-				try:
-					# create an array and populate with file paths to our jpgs
-					myJpgs=[0 for i in range(4)]
-					for i in range(4):
-						myJpgs[i]=config.file_path + now + "-0" + str(i+1) + ".jpg"
-				#	client.create_photo(config.tumblr_blog, state="published", tags=[config.tagsForTumblr], format="markdown", data=myJpgs)
-					break
-				except ValueError:
-					print "Oops. No internect connection. Upload later."
-					try: #make a text file as a note to upload the .gif later
-						file = open(config.file_path + now + "-FILENOTUPLOADED.txt",'w')   # Trying to create a new file or open one
-						file.close()
-					except:
-						print('Something went wrong. Could not write file.')
-						sys.exit(0) # quit Python				
+	graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + config.file_path + now + "*-sm.jpg " + config.file_path + now + ".gif" 
+	os.system(graphicsmagick) #make the .gif
 	
 	########################### Begin Step 4 #################################
 	
@@ -328,10 +279,7 @@ def start_photobooth():
 		
 	print "Done"
 	
-	if config.post_online:
-		show_image(real_path + "/finished.png")
-	else:
-		show_image(real_path + "/finished2.png")
+	show_image(real_path + "/finished2.png")
 	
 	time.sleep(restart_delay)
 	show_image(real_path + "/intro.png");
