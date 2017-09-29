@@ -28,13 +28,6 @@ capture_delay = 1 # delay between pics
 prep_delay = 5 # number of seconds at step 1 as users prep to have photo taken
 gif_delay = 100 # How much time between frames in the animated gif
 restart_delay = 10 # how long to display finished message before beginning a new session
-test_server = 'www.google.com'
-
-# full frame of v1 camera is 2592x1944. Wide screen max is 2592,1555
-# if you run into resource issues, try smaller, like 1920x1152. 
-# or increase memory http://picamera.readthedocs.io/en/release-1.12/fov.html#hardware-limits
-high_res_w = 1296 # width of high res image, if taken
-high_res_h = 972 # height of high res image, if taken
 
 #############################
 ### Variables that Change ###
@@ -95,20 +88,7 @@ def clear_pics(channel):
 		GPIO.output(led_pin,True); 
 		sleep(0.25)
 		GPIO.output(led_pin,False);
-		sleep(0.25)
-
-# check if connected to the internet   
-def is_connected():
-  try: 
-    # see if we can resolve the host name -- tells us if there is a DNS listening  
-    host = socket.gethostbyname(test_server)
-    # connect to the host -- tells us if the host is actually
-    # reachable
-    s = socket.create_connection((host, 80), 2)
-    return True
-  except:
-     pass
-  return False    
+		sleep(0.25) 
 
 # set variables to properly display the image on screen at right ratio
 def set_demensions(img_w, img_h):
