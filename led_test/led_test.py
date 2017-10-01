@@ -20,8 +20,9 @@ class led_test:
 
 
 	def turn_led_on(self, lednumber, status):
+		int_led_value = int(self.config.get('Leds', 'led_'+`lednumber`))
 		try:
-			GPIO.output(self.config.get('Leds', 'led_'+`lednumber`),status) #turn on the LED
+			GPIO.output(int_led_value,status) #turn on the LED
 		except:
 			print('GPIO unavailable, unable to turn led_'+`lednumber`+' to '+`status`)
 			
