@@ -48,10 +48,10 @@ class button_test:
 	run_main_loop = False
 	
 	def __init__(self):
-		global run_main_loop
 		for buttonnumber in range(1, 2):
-			self.setup_button(buttonnumber)	
-		run_main_loop = True
+			self.setup_button(buttonnumber)
+		run_button_loops()
+		
 	
 	def setup_button(self, buttonnumber):
 		print("setup button "+`buttonnumber`)
@@ -61,15 +61,19 @@ class button_test:
 #		except:
 #			print('GPIO unavailable, unable to setup button_'+`buttonnumber`)
 
-
-	while run_main_loop:
-#		try:
-		GPIO.wait_for_edge(btn_pin, GPIO.FALLING)
-		print('button pressed')
-		time.sleep(0.3) #debounce
-#		except:
-#			run_main_loop = False
-#			print('GPIO unavailable, unable to setup button_'+`buttonnumber`)
+	def run_button_loops(self):
+		global run_main_loop
+		run_main_loop = True
+		while run_main_loop:
+			for buttonnumber in range(1, 2):
+#				try:
+				btn_int_value = int(self.config.get('Leds', 'led_'+`buttonnumber`))
+				GPIO.wait_for_edge(btn_int_value, GPIO.FALLING)
+			print('button pressed')
+			time.sleep(0.3) #debounce
+#			except:
+#				run_main_loop = False
+#				print('GPIO unavailable, unable to setup button_'+`buttonnumber`)
 		
 led_test()
 button_test()
