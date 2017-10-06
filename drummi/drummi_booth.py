@@ -60,13 +60,10 @@ replay_cycles = 2 # how many times to show each photo on-screen after taking
 real_path = os.path.dirname(os.path.realpath(__file__))
 waiting_for_screensaver = False
 
-class playpreview_threadclass(threading.Thread):
-
-	def __init__(self, threadID, name, counter):
-		threading.Thread.__init__(self)
-		self.threadID = threadID
-		self.name = name
-		self.counter = counter
+class playpreview_threadclass():
+	
+	def __init__(self):
+		print('playpreview init')
 	
 	def run(self):
 		print('running screensaver')
@@ -94,12 +91,10 @@ class playpreview_threadclass(threading.Thread):
 			show_image(config.file_path+filename)
 			time.sleep(3)
 
-class wait_for_button_threadclass(threading.Thread):
-	def __init__(self, threadID, name, counter):
-		threading.Thread.__init__(self)
-		self.threadID = threadID
-		self.name = name
-		self.counter = counter
+class wait_for_button_threadclass():
+	
+	def __init__(self):
+		print('wait for button init')
 	
 	def run(self):
 		print('running button')
@@ -365,9 +360,13 @@ except:
 
 show_image(real_path + "/intro.png");
 
-t1 = playpreview_threadclass(1, "Screensaver", 1)
-t1.start()
 input(pygame.event.get()) # press escape to exit pygame. Then press ctrl-c to exit python.
-t2 = wait_for_button_threadclass(2, "Button", 2)
-#	t2.setDeamon(True)
+
+screensaver = playpreview_threadclass()
+waitforbutton = wait_for_button_threadclass()
+
+t1 = threading.Thread(target=screensaver.run)
+t2 = threading.Thread(target=waitforbutton.run)
+t1.start()
 t2.start()
+
