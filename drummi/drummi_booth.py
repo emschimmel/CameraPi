@@ -367,6 +367,9 @@ waitforbutton = wait_for_button_threadclass()
 
 t1 = threading.Thread(target=screensaver.run)
 t2 = threading.Thread(target=waitforbutton.run)
+t1.setDaemon(True)
+t2.setDaemon(True)
 t1.start()
 t2.start()
+
 
