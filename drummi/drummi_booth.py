@@ -73,8 +73,8 @@ class playpreview_threadclass(threading.Thread):
 		global waiting_for_screensaver
 		while True:
 			if waiting_for_screensaver:
-				print('screensaver waits 15')
-				time.sleep(15)
+				print('screensaver waits 2')
+				time.sleep(2)
 				if waiting_for_screensaver: # still waiting?
 					print('I still waited')
 					self.play_screensaver()	# play!	
