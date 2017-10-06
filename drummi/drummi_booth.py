@@ -3,18 +3,29 @@
 # see instructions at http://www.drumminhands.com/2014/06/15/raspberry-pi-photo-booth/
 
 import os
+import shutil
 import glob
 import time
 import traceback
+import config # this is the config python file config.py
 from time import sleep
-import RPi.GPIO as GPIO
-import picamera # http://picamera.readthedocs.org/en/release-1.4/install2.html
+try:
+	import RPi.GPIO as GPIO
+except:
+	print('GPIO unavailable')
+try:
+	import picamera # http://picamera.readthedocs.org/en/release-1.4/install2.html
+except:
+	print('picamera unavailable')
+	config.file_path = './mock/'
 import atexit
 import sys
 import socket
+import random
+import threading
 import pygame
 from pygame.locals import QUIT, KEYDOWN, K_ESCAPE
-import config # this is the config python file config.py
+
 from signal import alarm, signal, SIGALRM, SIGKILL
 
 ########################
@@ -28,6 +39,9 @@ capture_delay = 1 # delay between pics
 prep_delay = 5 # number of seconds at step 1 as users prep to have photo taken
 gif_delay = 100 # How much time between frames in the animated gif
 restart_delay = 10 # how long to display finished message before beginning a new session
+
+high_res_w = 1296 # width of high res image, if taken
+high_res_h = 972 # height of high res image, if taken
 
 #############################
 ### Variables that Change ###
@@ -44,12 +58,69 @@ replay_cycles = 2 # how many times to show each photo on-screen after taking
 ### Other Config ###
 ####################
 real_path = os.path.dirname(os.path.realpath(__file__))
+waiting_for_screensaver = False
 
-# GPIO setup
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(led_pin,GPIO.OUT) # LED
-GPIO.setup(btn_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.output(led_pin,False) #for some reason the pin turns on at the beginning of the program. Why?
+class playpreview_threadclass(threading.Thread):
+
+	def __init__(self, threadID, name, counter):
+		threading.Thread.__init__(self)
+		self.threadID = threadID
+		self.name = name
+		self.counter = counter
+	
+	def run(self):
+		print('running screensaver')
+		global waiting_for_screensaver
+		while True:
+			if waiting_for_screensaver:
+				print('screensaver waits 15')
+				time.sleep(15)
+				if waiting_for_screensaver: # still waiting?
+					print('I still waited')
+					self.play_screensaver()	# play!	
+
+	def next_image(self):
+		root, dirs, files=next(os.walk(config.file_path))
+		imageCollection=list(filter(lambda filename:filename.endswith('.gif'), files))
+		if not imageCollection:
+			imageCollection=list(filter(lambda filename:filename.endswith('.jpg'), files))
+		return random.choice(imageCollection)
+
+	def play_screensaver(self):
+		global waiting_for_screensaver
+		while waiting_for_screensaver:
+			filename = self.next_image()
+			print(filename)
+			show_image(config.file_path+filename)
+			time.sleep(3)
+
+class wait_for_button_threadclass(threading.Thread):
+	def __init__(self, threadID, name, counter):
+		threading.Thread.__init__(self)
+		self.threadID = threadID
+		self.name = name
+		self.counter = counter
+	
+	def run(self):
+		print('running button')
+		while True:
+			try:
+				GPIO.output(led_pin,True); #turn on the light showing users they can push the button
+				GPIO.wait_for_edge(btn_pin, GPIO.FALLING)
+				time.sleep(config.debounce) #debounce
+			except:
+				print('GPIO unavailable, going to sleep for 5')
+				time.sleep(5) # screensaver
+			start_photobooth()
+
+try:
+	# GPIO setup
+	GPIO.setmode(GPIO.BOARD)
+	GPIO.setup(led_pin,GPIO.OUT) # LED
+	GPIO.setup(btn_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+	GPIO.output(led_pin,False) #for some reason the pin turns on at the beginning of the program. Why?
+except:
+	print('GPIO unavailable')
 
 # initialize pygame
 pygame.init()
@@ -67,7 +138,10 @@ pygame.display.toggle_fullscreen()
 def cleanup():
   print('Ended abruptly')
   pygame.quit()
-  GPIO.cleanup()
+  try:
+  	GPIO.cleanup()
+  except:
+	print('GPIO unavailable')
 atexit.register(cleanup)
 
 # A function to handle keyboard/mouse/device input events    
@@ -84,11 +158,14 @@ def clear_pics(channel):
 		os.remove(f) 
 	#light the lights in series to show completed
 	print "Deleted previous pics"
-	for x in range(0, 3): #blink light
-		GPIO.output(led_pin,True); 
-		sleep(0.25)
-		GPIO.output(led_pin,False);
-		sleep(0.25) 
+	try:
+		for x in range(0, 3): #blink light
+			GPIO.output(led_pin,True); 
+			sleep(0.25)
+			GPIO.output(led_pin,False);
+			sleep(0.25) 
+	except:
+		print('GPIO unavailable')
 
 # set variables to properly display the image on screen at right ratio
 def set_demensions(img_w, img_h):
@@ -100,27 +177,9 @@ def set_demensions(img_w, img_h):
 
     # based on output screen resolution, calculate how to display
     ratio_h = (config.monitor_w * img_h) / img_w 
-
-    if (ratio_h < config.monitor_h):
-        #Use horizontal black bars
-        #print "horizontal black bars"
-        transform_y = ratio_h
-        transform_x = config.monitor_w
-        offset_y = (config.monitor_h - ratio_h) / 2
-        offset_x = 0
-    elif (ratio_h > config.monitor_h):
-        #Use vertical black bars
-        #print "vertical black bars"
-        transform_x = (config.monitor_h * img_w) / img_h
-        transform_y = config.monitor_h
-        offset_x = (config.monitor_w - transform_x) / 2
-        offset_y = 0
-    else:
-        #No need for black bars as photo ratio equals screen ratio
-        #print "no black bars"
-        transform_x = config.monitor_w
-        transform_y = config.monitor_h
-        offset_y = offset_x = 0
+    transform_x = config.monitor_w
+    transform_y = config.monitor_h
+    offset_y = offset_x = 0
 
     # uncomment these lines to troubleshoot screen ratios
 #     print str(img_w) + " x " + str(img_h)
@@ -168,62 +227,85 @@ def start_photobooth():
 	################################# Begin Step 1 #################################
 	
 	print "Get Ready"
-	GPIO.output(led_pin,False);
+	try:
+		GPIO.output(led_pin,False);
+	except:
+		print('GPIO unavailable')
 	show_image(real_path + "/instructions.png")
 	sleep(prep_delay)
 	
 	# clear the screen
 	clear_screen()
-	
-	camera = picamera.PiCamera()  
-	camera.vflip = False
-	camera.hflip = True # flip for preview, showing users a mirror image
-	camera.saturation = -100 # comment out this line if you want color images
-	camera.iso = config.camera_iso
-	
-	pixel_width = 0 # local variable declaration
-	pixel_height = 0 # local variable declaration
-
-	pixel_width = 500 # maximum width of animated gif on tumblr
-	pixel_height = config.monitor_h * pixel_width // config.monitor_w
-	camera.resolution = (pixel_width, pixel_height) # set camera resolution to low res
-	
+	try:
+		camera = picamera.PiCamera()  
+		camera.vflip = False
+		camera.hflip = True # flip for preview, showing users a mirror image
+		camera.saturation = -100 # comment out this line if you want color images
+		camera.iso = config.camera_iso
+		camera.resolution = (high_res_w, high_res_h) # set camera resolution to high res
+	except:
+		print('picamera unavailable')
 	################################# Begin Step 2 #################################
 	
 	print "Taking pics"
 	
 	now = time.strftime("%Y-%m-%d-%H-%M-%S") #get the current date and time for the start of the filename
-	
+	waiting_for_screensaver = False
 	if config.capture_count_pics:
 		try: # take the photos
 			for i in range(1,total_pics+1):
 				camera.hflip = True # preview a mirror image
 				camera.start_preview(resolution=(config.monitor_w, config.monitor_h)) # start preview at low res but the right ratio
 				time.sleep(2) #warm up camera
-				GPIO.output(led_pin,True) #turn on the LED
+				try:
+					GPIO.output(led_pin,True) #turn on the LED
+				except:
+					print('GPIO unavailable')
 				filename = config.file_path + now + '-0' + str(i) + '.jpg'
 				camera.hflip = False # flip back when taking photo
 				camera.capture(filename)
 				print(filename)
-				GPIO.output(led_pin,False) #turn off the LED
+				try:
+					GPIO.output(led_pin,False) #turn off the LED
+				except:
+					print('GPIO unavailable')
 				camera.stop_preview()
 				show_image(real_path + "/pose" + str(i) + ".png")
 				time.sleep(capture_delay) # pause in-between shots
 				clear_screen()
 				if i == total_pics+1:
 					break
+		except:
+			print('picamera unavailable, generating images')
+			for i in range(1, 5):
+				filename = config.file_path + now + '-0' + str(i) + '.jpg'	
+				shutil.copy("pose"+str(i)+".png", filename)
+				show_image(real_path + "/pose" + str(i) + ".png")
+				time.sleep(capture_delay) # pause in-between shots
+				clear_screen()
+			
 		finally:
-			camera.close()
+			try:
+				camera.close()
+			except:
+					print('picamera unavailable')	
 	else:
-		camera.start_preview(resolution=(config.monitor_w, config.monitor_h)) # start preview at low res but the right ratio
-		time.sleep(2) #warm up camera
-		
 		try: #take the photos
+			camera.start_preview(resolution=(config.monitor_w, config.monitor_h)) # start preview at low res but the right ratio
+			time.sleep(2) #warm up camera
+		
+		
 			for i, filename in enumerate(camera.capture_continuous(config.file_path + now + '-' + '{counter:02d}.jpg')):
-				GPIO.output(led_pin,True) #turn on the LED
+				try:
+					GPIO.output(led_pin,True) #turn on the LED
+				except:
+					print('GPIO unavailable')
 				print(filename)
 				time.sleep(capture_delay) # pause in-between shots
-				GPIO.output(led_pin,False) #turn off the LED
+				try:
+					GPIO.output(led_pin,False) #turn off the LED
+				except:
+					print('GPIO unavailable')
 				if i == total_pics-1:
 					break
 		finally:
@@ -238,12 +320,7 @@ def start_photobooth():
 	
 	show_image(real_path + "/processing.png")
 	
-	# first make a small version of each image. Tumblr's max animated gif's are 500 pixels wide.
-	for x in range(1, total_pics+1): #batch process all the images
-		graphicsmagick = "gm convert -size 500x500 " + config.file_path + now + "-0" + str(x) + ".jpg -thumbnail 500x500 " + config.file_path + now + "-0" + str(x) + "-sm.jpg"
-		os.system(graphicsmagick) #do the graphicsmagick action
-
-	graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + config.file_path + now + "*-sm.jpg " + config.file_path + now + ".gif" 
+	graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + config.file_path + now + "*.jpg " + config.file_path + now + ".gif" 
 	os.system(graphicsmagick) #make the .gif
 	
 	########################### Begin Step 4 #################################
@@ -258,12 +335,15 @@ def start_photobooth():
 		pygame.quit()
 		
 	print "Done"
-	
+	waiting_for_screensaver = True
 	show_image(real_path + "/finished2.png")
 	
 	time.sleep(restart_delay)
 	show_image(real_path + "/intro.png");
-	GPIO.output(led_pin,True) #turn on the LED
+	try:
+		GPIO.output(led_pin,True) #turn on the LED
+	except:
+		print('GPIO unavailable')
 
 ####################
 ### Main Program ###
@@ -274,17 +354,20 @@ if config.clear_on_startup:
 	clear_pics(1)
 
 print "Photo booth app running..." 
-for x in range(0, 5): #blink light to show the app is running
-	GPIO.output(led_pin,True)
-	sleep(0.25)
-	GPIO.output(led_pin,False)
-	sleep(0.25)
+try:
+	for x in range(0, 5): #blink light to show the app is running
+		GPIO.output(led_pin,True)
+		sleep(0.25)
+		GPIO.output(led_pin,False)
+		sleep(0.25)
+except:
+	print('GPIO unavailable')
 
 show_image(real_path + "/intro.png");
 
-while True:
-	GPIO.output(led_pin,True); #turn on the light showing users they can push the button
-	input(pygame.event.get()) # press escape to exit pygame. Then press ctrl-c to exit python.
-	GPIO.wait_for_edge(btn_pin, GPIO.FALLING)
-	time.sleep(config.debounce) #debounce
-	start_photobooth()
+t1 = playpreview_threadclass(1, "Screensaver", 1)
+t1.start()
+input(pygame.event.get()) # press escape to exit pygame. Then press ctrl-c to exit python.
+t2 = wait_for_button_threadclass(2, "Button", 2)
+#	t2.setDeamon(True)
+t2.start()
