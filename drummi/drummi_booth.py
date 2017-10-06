@@ -235,7 +235,7 @@ def start_photobooth():
 		camera = picamera.PiCamera()  
 		camera.vflip = False
 		camera.hflip = True # flip for preview, showing users a mirror image
-		camera.saturation = -100 # comment out this line if you want color images
+#		camera.saturation = -100 # comment out this line if you want color images
 		camera.iso = config.camera_iso
 		camera.resolution = (high_res_w, high_res_h) # set camera resolution to high res
 	except:
@@ -367,8 +367,6 @@ waitforbutton = wait_for_button_threadclass()
 
 t1 = threading.Thread(target=screensaver.run)
 t2 = threading.Thread(target=waitforbutton.run)
-t1.setDaemon(True)
-t2.setDaemon(True)
 t1.start()
 t2.start()
 
