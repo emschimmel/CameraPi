@@ -1,2 +1,2 @@
 *.pyc
-./drummi/mock/* 
+drummi/mock/*
