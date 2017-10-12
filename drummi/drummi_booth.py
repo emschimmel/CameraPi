@@ -47,10 +47,6 @@ high_res_h = 972 # height of high res image, if taken
 ### Variables that Change ###
 #############################
 # Do not change these variables, as the code will change it anyway
-transform_x = config.monitor_w # how wide to scale the jpg when replaying
-transfrom_y = config.monitor_h # how high to scale the jpg when replaying
-offset_x = 0 # how far off to left corner to display photos
-offset_y = 0 # how far off to left corner to display photos
 replay_delay = 1 # how much to wait in-between showing pics on-screen after taking
 replay_cycles = 2 # how many times to show each photo on-screen after taking
 
@@ -58,7 +54,10 @@ replay_cycles = 2 # how many times to show each photo on-screen after taking
 ### Other Config ###
 ####################
 real_path = os.path.dirname(os.path.realpath(__file__))
-waiting_for_screensaver = False
+waiting_for_screensaver = True
+time_before_screensaver = 2
+time_between_screensaver = 5
+mock_time_before_pressing_button = 5
 
 class playpreview_threadclass():
 	
@@ -70,8 +69,8 @@ class playpreview_threadclass():
 		global waiting_for_screensaver
 		while True:
 			if waiting_for_screensaver:
-				print('screensaver waits 2')
-				time.sleep(2)
+				print('screensaver waits '+`time_before_screensaver`)
+				time.sleep(time_before_screensaver)
 				if waiting_for_screensaver: # still waiting?
 					print('I still waited')
 					self.play_screensaver()	# play!	
@@ -87,9 +86,10 @@ class playpreview_threadclass():
 		global waiting_for_screensaver
 		while waiting_for_screensaver:
 			filename = self.next_image()
-			print(filename)
-			show_image(config.file_path+filename)
-			time.sleep(3)
+			print('screensaver image '+filename)
+			if waiting_for_screensaver:
+				show_image(config.file_path+filename)
+			time.sleep(time_between_screensaver)
 
 class wait_for_button_threadclass():
 	
@@ -104,8 +104,9 @@ class wait_for_button_threadclass():
 				GPIO.wait_for_edge(btn_pin, GPIO.FALLING)
 				time.sleep(config.debounce) #debounce
 			except:
-				print('GPIO unavailable, going to sleep for 5')
-				time.sleep(5) # screensaver
+				print('GPIO unavailable, going to sleep for '+`mock_time_before_pressing_button`)
+				time.sleep(mock_time_before_pressing_button) # mock_time_before_pressing_button
+			print('starting booth')
 			start_photobooth()
 
 try:
@@ -163,26 +164,6 @@ def clear_pics(channel):
 		print('GPIO unavailable')
 
 # set variables to properly display the image on screen at right ratio
-def set_demensions(img_w, img_h):
-	# Note this only works when in booting in desktop mode. 
-	# When running in terminal, the size is not correct (it displays small). Why?
-
-    # connect to global vars
-    global transform_y, transform_x, offset_y, offset_x
-
-    # based on output screen resolution, calculate how to display
-    ratio_h = (config.monitor_w * img_h) / img_w 
-    transform_x = config.monitor_w
-    transform_y = config.monitor_h
-    offset_y = offset_x = 0
-
-    # uncomment these lines to troubleshoot screen ratios
-#     print str(img_w) + " x " + str(img_h)
-#     print "ratio_h: "+ str(ratio_h)
-#     print "transform_x: "+ str(transform_x)
-#     print "transform_y: "+ str(transform_y)
-#     print "offset_y: "+ str(offset_y)
-#     print "offset_x: "+ str(offset_x)
 
 # display one image on screen
 def show_image(image_path):
@@ -194,12 +175,9 @@ def show_image(image_path):
 	img = pygame.image.load(image_path)
 	img = img.convert() 
 
-	# set pixel dimensions based on image
-	set_demensions(img.get_width(), img.get_height())
-
 	# rescale the image to fit the current display
-	img = pygame.transform.scale(img, (transform_x,transfrom_y))
-	screen.blit(img,(offset_x,offset_y))
+	img = pygame.transform.scale(img, (config.monitor_w,config.monitor_h))
+	screen.blit(img,(0,0))
 	pygame.display.flip()
 
 # display a blank screen
@@ -216,9 +194,10 @@ def display_pics(jpg_group):
 				
 # define the photo taking function for when the big button is pressed 
 def start_photobooth(): 
-
-	input(pygame.event.get()) # press escape to exit pygame. Then press ctrl-c to exit python.
-
+	global waiting_for_screensaver
+	waiting_for_screensaver = False
+	print('in booth')
+	#input(pygame.event.get()) # press escape to exit pygame. Then press ctrl-c to exit python.
 	################################# Begin Step 1 #################################
 	
 	print "Get Ready"
@@ -226,6 +205,7 @@ def start_photobooth():
 		GPIO.output(led_pin,False);
 	except:
 		print('GPIO unavailable')
+	print('going to show instructions')
 	show_image(real_path + "/instructions.png")
 	sleep(prep_delay)
 	
@@ -245,71 +225,47 @@ def start_photobooth():
 	print "Taking pics"
 	
 	now = time.strftime("%Y-%m-%d-%H-%M-%S") #get the current date and time for the start of the filename
-	waiting_for_screensaver = False
-	if config.capture_count_pics:
-		try: # take the photos
-			for i in range(1,total_pics+1):
-				camera.hflip = True # preview a mirror image
-				camera.start_preview(resolution=(config.monitor_w, config.monitor_h)) # start preview at low res but the right ratio
-				time.sleep(2) #warm up camera
-				try:
-					GPIO.output(led_pin,True) #turn on the LED
-				except:
-					print('GPIO unavailable')
-				filename = config.file_path + now + '-0' + str(i) + '.jpg'
-				camera.hflip = False # flip back when taking photo
-				camera.capture(filename)
-				print(filename)
-				try:
-					GPIO.output(led_pin,False) #turn off the LED
-				except:
-					print('GPIO unavailable')
-				camera.stop_preview()
-				show_image(real_path + "/pose" + str(i) + ".png")
-				time.sleep(capture_delay) # pause in-between shots
-				clear_screen()
-				if i == total_pics+1:
-					break
-		except:
-			print('picamera unavailable, generating images')
-			for i in range(1, 5):
-				filename = config.file_path + now + '-0' + str(i) + '.jpg'	
-				shutil.copy("pose"+str(i)+".png", filename)
-				show_image(real_path + "/pose" + str(i) + ".png")
-				time.sleep(capture_delay) # pause in-between shots
-				clear_screen()
-			
-		finally:
-			try:
-				camera.close()
-			except:
-					print('picamera unavailable')	
-	else:
-		try: #take the photos
+	try: # take the photos
+		for i in range(1,total_pics+1):
+			camera.hflip = True # preview a mirror image
 			camera.start_preview(resolution=(config.monitor_w, config.monitor_h)) # start preview at low res but the right ratio
 			time.sleep(2) #warm up camera
-		
-		
-			for i, filename in enumerate(camera.capture_continuous(config.file_path + now + '-' + '{counter:02d}.jpg')):
-				try:
-					GPIO.output(led_pin,True) #turn on the LED
-				except:
-					print('GPIO unavailable')
-				print(filename)
-				time.sleep(capture_delay) # pause in-between shots
-				try:
-					GPIO.output(led_pin,False) #turn off the LED
-				except:
-					print('GPIO unavailable')
-				if i == total_pics-1:
-					break
-		finally:
+			try:
+				GPIO.output(led_pin,True) #turn on the LED
+			except:
+				print('GPIO unavailable')
+			filename = config.file_path + now + '-0' + str(i) + '.jpg'
+			camera.hflip = False # flip back when taking photo
+			camera.capture(filename)
+			print(filename)
+			try:
+				GPIO.output(led_pin,False) #turn off the LED
+			except:
+				print('GPIO unavailable')
 			camera.stop_preview()
+			show_image(real_path + "/pose" + str(i) + ".png")
+			time.sleep(capture_delay) # pause in-between shots
+			clear_screen()
+			if i == total_pics+1:
+				break
+	except:
+		print('picamera unavailable, generating images')
+		for i in range(1, 5):
+			filename = config.file_path + now + '-0' + str(i) + '.jpg'	
+			shutil.copy("pose"+str(i)+".png", filename)
+			show_image(real_path + "/pose" + str(i) + ".png")
+			time.sleep(capture_delay) # pause in-between shots
+			clear_screen()
+		
+	finally:
+		try:
 			camera.close()
+		except:
+				print('picamera unavailable')	
 		
 	########################### Begin Step 3 #################################
 	
-	input(pygame.event.get()) # press escape to exit pygame. Then press ctrl-c to exit python.
+	#input(pygame.event.get()) # press escape to exit pygame. Then press ctrl-c to exit python.
 	
 	print "Creating an animated gif" 
 	
@@ -320,7 +276,7 @@ def start_photobooth():
 	
 	########################### Begin Step 4 #################################
 	
-	input(pygame.event.get()) # press escape to exit pygame. Then press ctrl-c to exit python.
+	#input(pygame.event.get()) # press escape to exit pygame. Then press ctrl-c to exit python.
 	
 	try:
 		display_pics(now)
@@ -360,7 +316,7 @@ except:
 
 show_image(real_path + "/intro.png");
 
-input(pygame.event.get()) # press escape to exit pygame. Then press ctrl-c to exit python.
+
 
 screensaver = playpreview_threadclass()
 waitforbutton = wait_for_button_threadclass()
@@ -370,4 +326,6 @@ t2 = threading.Thread(target=waitforbutton.run)
 t1.start()
 t2.start()
 
-
+while True:
+	input(pygame.event.get()) # press escape to exit pygame. Then press ctrl-c to exit python.
+	sleep(10)
