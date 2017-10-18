@@ -56,7 +56,6 @@ replay_cycles = 2 # how many times to show each photo on-screen after taking
 real_path = os.path.dirname(os.path.realpath(__file__))
 waiting_for_screensaver = True
 time_before_screensaver = 5
-time_between_screensaver = 1
 mock_time_before_pressing_button = 115
 
 class playpreview_threadclass():
@@ -93,13 +92,13 @@ class playpreview_threadclass():
 			else:		
 				filename = self.next_image()
 				print('screensaver image '+filename)
-				if waiting_for_screensaver:
-					self.screensaver_runned+=1
-					for x in range(1, 5):
-						if waiting_for_screensaver:
-							show_image(config.file_path+filename.replace('-01.jpg', '-0'+`x`+'.jpg'))
-							time.sleep(replay_delay) # pause 				
-			time.sleep(time_between_screensaver)
+				self.screensaver_runned+=1
+				for i in range(0, replay_cycles):
+					if waiting_for_screensaver:					
+						for x in range(1, (total_pics+1)):
+							if waiting_for_screensaver:
+								show_image(config.file_path+filename.replace('-01.jpg', '-0'+`x`+'.jpg'))
+								time.sleep(replay_delay) # pause 				
 
 class wait_for_button_threadclass():
 	
