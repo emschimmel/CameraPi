@@ -55,9 +55,9 @@ replay_cycles = 2 # how many times to show each photo on-screen after taking
 ####################
 real_path = os.path.dirname(os.path.realpath(__file__))
 waiting_for_screensaver = True
-time_before_screensaver = 2
-time_between_screensaver = 5
-mock_time_before_pressing_button = 5
+time_before_screensaver = 5
+time_between_screensaver = 1
+mock_time_before_pressing_button = 115
 
 class playpreview_threadclass():
 	
@@ -67,6 +67,7 @@ class playpreview_threadclass():
 	def run(self):
 		print('running screensaver')
 		global waiting_for_screensaver
+		
 		while True:
 			if waiting_for_screensaver:
 				print('screensaver waits '+`time_before_screensaver`)
@@ -74,21 +75,30 @@ class playpreview_threadclass():
 				if waiting_for_screensaver: # still waiting?
 					print('I still waited')
 					self.play_screensaver()	# play!	
+					
 
 	def next_image(self):
 		root, dirs, files=next(os.walk(config.file_path))
-		imageCollection=list(filter(lambda filename:filename.endswith('.gif'), files))
-		if not imageCollection:
-			imageCollection=list(filter(lambda filename:filename.endswith('.jpg'), files))
+		imageCollection=list(filter(lambda filename:filename.endswith('-01.jpg'), files))
 		return random.choice(imageCollection)
 
 	def play_screensaver(self):
 		global waiting_for_screensaver
+		self.screensaver_runned = 0
 		while waiting_for_screensaver:
-			filename = self.next_image()
-			print('screensaver image '+filename)
-			if waiting_for_screensaver:
-				show_image(config.file_path+filename)
+			if self.screensaver_runned is 5:
+				self.screensaver_runned = 0
+				show_image(real_path + "/intro.png");
+				time.sleep(time_before_screensaver)
+			else:		
+				filename = self.next_image()
+				print('screensaver image '+filename)
+				if waiting_for_screensaver:
+					self.screensaver_runned+=1
+					for x in range(1, 5):
+						if waiting_for_screensaver:
+							show_image(config.file_path+filename.replace('-01.jpg', '-0'+`x`+'.jpg'))
+							time.sleep(replay_delay) # pause 				
 			time.sleep(time_between_screensaver)
 
 class wait_for_button_threadclass():
@@ -168,17 +178,19 @@ def clear_pics(channel):
 # display one image on screen
 def show_image(image_path):
 
-	# clear the screen
-	screen.fill( (0,0,0) )
+	try:
+		# load the image
+		img = pygame.image.load(image_path)
+		img = img.convert() 
 
-	# load the image
-	img = pygame.image.load(image_path)
-	img = img.convert() 
-
-	# rescale the image to fit the current display
-	img = pygame.transform.scale(img, (config.monitor_w,config.monitor_h))
-	screen.blit(img,(0,0))
-	pygame.display.flip()
+		# rescale the image to fit the current display
+		img = pygame.transform.scale(img, (config.monitor_w,config.monitor_h))
+		# clear the screen
+		screen.fill( (0,0,0) )
+		screen.blit(img,(0,0))
+		pygame.display.flip()
+	except:
+		print('Image unavailable '+image_path	)
 
 # display a blank screen
 def clear_screen():
@@ -271,8 +283,8 @@ def start_photobooth():
 	
 	show_image(real_path + "/processing.png")
 	
-	graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + config.file_path + now + "*.jpg " + config.file_path + now + ".gif" 
-	os.system(graphicsmagick) #make the .gif
+	# graphicsmagick = "gm convert -delay " + str(gif_delay) + " " + config.file_path + now + "*.jpg " + config.file_path + now + ".gif" 
+	# os.system(graphicsmagick) #make the .gif
 	
 	########################### Begin Step 4 #################################
 	
