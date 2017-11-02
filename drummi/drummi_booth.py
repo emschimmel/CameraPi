@@ -48,7 +48,7 @@ high_res_h = 972 # height of high res image, if taken
 #############################
 # Do not change these variables, as the code will change it anyway
 replay_delay = 1 # how much to wait in-between showing pics on-screen after taking
-replay_cycles = 2 # how many times to show each photo on-screen after taking
+replay_cycles = 1 # how many times to show each photo on-screen after taking
 
 ####################
 ### Other Config ###
@@ -70,6 +70,8 @@ class playpreview_threadclass():
 		while True:
 			if waiting_for_screensaver:
 				print('screensaver waits '+`time_before_screensaver`)
+				time.sleep(1)
+				show_image(real_path + "/intro.png")
 				time.sleep(time_before_screensaver)
 				if waiting_for_screensaver: # still waiting?
 					print('I still waited')
@@ -87,7 +89,7 @@ class playpreview_threadclass():
 		while waiting_for_screensaver:
 			if self.screensaver_runned is 5:
 				self.screensaver_runned = 0
-				show_image(real_path + "/intro.png");
+				show_image(real_path + "/intro.png")
 				time.sleep(time_before_screensaver)
 			else:		
 				filename = self.next_image()
@@ -109,7 +111,7 @@ class wait_for_button_threadclass():
 		print('running button')
 		while True:
 			try:
-				GPIO.output(led_pin,True); #turn on the light showing users they can push the button
+				GPIO.output(led_pin,True) #turn on the light showing users they can push the button
 				GPIO.wait_for_edge(btn_pin, GPIO.FALLING)
 				time.sleep(config.debounce) #debounce
 			except:
@@ -165,9 +167,9 @@ def clear_pics(channel):
 	print "Deleted previous pics"
 	try:
 		for x in range(0, 3): #blink light
-			GPIO.output(led_pin,True); 
+			GPIO.output(led_pin,True) 
 			sleep(0.25)
-			GPIO.output(led_pin,False);
+			GPIO.output(led_pin,False)
 			sleep(0.25) 
 	except:
 		print('GPIO unavailable')
@@ -213,7 +215,7 @@ def start_photobooth():
 	
 	print "Get Ready"
 	try:
-		GPIO.output(led_pin,False);
+		GPIO.output(led_pin,False)
 	except:
 		print('GPIO unavailable')
 	print('going to show instructions')
@@ -301,7 +303,7 @@ def start_photobooth():
 	show_image(real_path + "/finished2.png")
 	
 	time.sleep(restart_delay)
-	show_image(real_path + "/intro.png");
+	show_image(real_path + "/intro.png")
 	try:
 		GPIO.output(led_pin,True) #turn on the LED
 	except:
@@ -325,7 +327,7 @@ try:
 except:
 	print('GPIO unavailable')
 
-show_image(real_path + "/intro.png");
+show_image(real_path + "/intro.png")
 
 
 
